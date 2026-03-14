@@ -1,132 +1,76 @@
-# Lenovo ThinkPad T440p Official BIOS 2.56
+# Lenovo ThinkPad T440p Modded BIOS 2.56 (GLETA2WW)
 
-This repository contains the official Lenovo BIOS version 2.56 (GLETA2WW) for ThinkPad T440p, extracted directly from the SPI flash chips.
+This repository provides the official and modified BIOS firmware for the Lenovo ThinkPad T440p. This mod is specifically designed to unlock the hidden potential of this legendary workstation.
 
-## BIOS Chips Information
+## ⚠️ CRITICAL REQUIREMENT
 
-The T440p BIOS is stored in two separate SPI flash chips on the motherboard:
+**Your ThinkPad T440p MUST already be running Official BIOS Version 2.56 (GLETA2WW) before flashing these files.**
 
-| Position | Chip Model | Size | File |
-|----------|------------|------|------|
-| U49 | Winbond W25Q32.V | 4MB | `4mb_bios_U49.bin` |
-| U113 | Winbond W25Q64.V | 8MB | `8mb_bios_U113.bin` |
+* Using these files on a machine with a different BIOS version (e.g., 2.36 or 2.53) may result in a **brick** or **5-beep boot error** due to version mismatches in the Embedded Controller (EC) firmware.
 
-### Modified BIOS
+---
 
-- **Advanced BIOS for U49**: `advanced_bios_For_U49.bin` (signed modified version)
+## Mod Features
 
-### Chip Locations
+The `advanced_bios_For_U49.bin` includes the following professional modifications:
 
-- **U49 (4MB)**: Located on the RAM side of the motherboard, easily accessible
-- **U113 (8MB)**: Located near U49, may be partially covered by plastic housing
+### 1. Wi-Fi & WWAN Whitelist Removal
 
-## File Contents
+* **Bypass Hardware Restrictions**: You can now install any M.2 Wi-Fi card (e.g., Intel AX210 Wi-Fi 6E) without the "Unauthorized network card" boot error.
+* **WWAN Freedom**: Support for non-Lenovo branded cellular modems in the WWAN slot.
 
-### 8MB BIOS (U113 - W25Q64)
-- Flash Descriptor Region
-- Intel Management Engine (ME) Region
-- Required for system boot
+### 2. Unlocked "Advanced" Menu
 
-### 4MB BIOS (U49 - W25Q32)
-- Main BIOS Region
-- UEFI Firmware Volumes
-- System firmware
+Access the hidden BIOS settings previously reserved for Lenovo engineers:
 
-### Advanced BIOS (U49 - Modified)
-- Based on original 4MB BIOS
-- Signed modified version
-- Enhanced features and capabilities
+* **CPU Tweaks**: Adjust Power Limits (PL1/PL2), ConfigTDP, and Turbo Activation Ratios.
+* **Memory Timings**: Fine-tune RAM frequency and latency settings.
+* **Video/Graphics**: Adjust Pre-Allocated Memory for Integrated Graphics (iGPU).
+* **Thermal Management**: Advanced fan control and thermal trip point configurations.
+* **Lake Tiny**: Toggle Intel I/O performance bottleneck bypass for faster storage response.
 
-## Version Information
+---
 
-- **BIOS Version**: GLETA2WW (2.56)
-- **Release Date**: 2021
-- **Source**: Official Lenovo BIOS Update
+## BIOS Chips & Files Information
 
-## Flashing Instructions
+The T440p motherboard contains two SPI flash chips that must be handled correctly:
 
-### Requirements
-- CH341A Flash Programmer
-- SOIC8 Test Clip (1.27mm pitch)
-- Computer with USB port
-- Ensure your current BIOS version is 2.56
+| Position | Chip Model | Size | File Name | Description |
+| --- | --- | --- | --- | --- |
+| **U49** | Winbond W25Q32 | 4MB | `4mb_bios_U49.bin` | Original BIOS Region |
+| **U113** | Winbond W25Q64 | 8MB | `8mb_bios_U113.bin` | ME Region & Descriptor |
+| **MOD** | **Winbond W25Q32** | **4MB** | `advanced_bios_For_U49.bin` | **Modified BIOS (Flash to U49)** |
 
-### Steps for Modified BIOS
+---
 
-1. **Power off the laptop completely** and disconnect the battery
+## Flashing Instructions (Hardware Required)
 
-2. **Connect CH341A to the U49 chip** (4MB):
-   - Pin 1 indicator (dot) on chip aligns with clip pin 1
-   - Ensure good contact with all 8 pins
+### Hardware Tools
 
-3. **Read and backup current BIOS**:
-   ```
-   # Always backup first!
-   Read from chip -> Save as backup.bin
-   ```
+* **Programmer**: CH341A USB Programmer.
+* **Clip**: SOIC8 Test Clip.
+* **Software**: AsProgrammer or NeoProgrammer.
 
-4. **Flash the modified BIOS**:
-   - For U49 (4MB chip): Write `advanced_bios_For_U49.bin` (signed modified version)
+### Steps
 
-5. **Verify after writing**:
-   - Use "Verify" function in CH341A software
-   - Ensure no errors
-
-### Special Case: Machine fails to pass POST
-
-If your machine fails to pass POST (power light stays on but no error beeps), you need to:
-
-1. **Completely remove the bottom case** of the laptop
-
-2. **Locate the U113 flash chip**:
-   - Position: South of U49 (away from battery side)
-   - Model: Winbond W25Q64.V (8MB)
-
-3. **Flash both chips**:
-   - For U113 (8MB chip): Write `8mb_bios_U113.bin`
-   - For U49 (4MB chip): Write `advanced_bios_For_U49.bin`
-
-4. **Verify both chips after writing**
+1. **Preparation**: Remove all power sources (Battery and AC Adapter).
+2. **Backup**: Always read and save your current U49 and U113 chips twice and compare their MD5 hashes to ensure a 100% valid backup.
+3. **Flashing U49**:
+* Open `advanced_bios_For_U49.bin`.
+* Write and Verify to the **4MB chip (U49)**.
 
 
+4. **Boot**: Reassemble and power on. If the system beeps 5 times or shows a black screen, proceed to flash the `8mb_bios_U113.bin` to the 8MB chip to ensure the entire SPI stack is synchronized.
+
+---
 
 ## Troubleshooting
 
-### 5 Beeps on Boot
-- BIOS checksum error
-- Ensure both chips are flashed correctly
-- Verify 4MB and 8MB files match
+* **5 Beeps on Boot**: Indicates a digital signature/checksum mismatch. Ensure you are flashing the "Signed" mod provided in this repo.
+* **Black Screen / No POST**: Check the seating of the SOIC8 clip. Ensure the red wire on the clip aligns with Pin 1 (dot) on the chip.
+* **Boot Loop**: Try clearing the CMOS by removing the coin-cell battery for 30 seconds.
 
-### Boot Loop (Fan spins then restarts)
-- Flash Descriptor may be corrupted
-- Re-flash the 8MB chip (U113)
-- Ensure Flash Descriptor signature (5A A5 F0 0F) is present at offset 0x10
+## Disclaimer
 
-### No Display / Black Screen
-- Check chip connections
-- Verify both chips are properly seated
-- Try re-flashing both chips
-
-## Warning
-
-⚠️ **BIOS flashing carries risk!**
-
-- Always backup your current BIOS before flashing
-- Ensure stable power during flashing process
-- Use correct file for each chip (4MB vs 8MB)
-- I am not responsible for any damage to your device
-
-## References
-
-- [Lenovo T440p Support Page](https://support.lenovo.com/)
-- [CH341A Programmer](https://github.com/niccokunzmann/ch341a-programmer)
-- [UEFITool](https://github.com/LongSoft/UEFITool)
-
-## License
-
-These BIOS files are property of Lenovo. This repository is for backup and educational purposes only.
-
-## Credits
-
-- Extracted and verified by community contribution
-- BIOS version 2.56 (GLETA2WW)
+⚠️ **FLASH AT YOUR OWN RISK.**
+BIOS flashing is a high-risk operation. I am not responsible for any hardware damage, data loss, or bricked devices. This repository is for educational and backup purposes only.
